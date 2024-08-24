@@ -4,12 +4,14 @@ phases:
   install:
     commands:
       - echo Installing dependencies...
-      # - cd devops/_aws/_codebuild/sample-python-app/
+      - ls
+      - cd devops/_aws/_codebuild/sample-python-app/
       - pip install -r requirements.txt
   build:
     commands:
       - echo Building the application...
-      # - cd devops/_aws/_codebuild/sample-python-app/
+      - ls
+      - cd devops/_aws/_codebuild/sample-python-app/
       - python hello.py
 
 artifacts:
