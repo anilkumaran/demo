@@ -1,0 +1,2 @@
+# Add any Python dependencies here
+requests
