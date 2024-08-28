@@ -1,2 +1,2 @@
 #!/bin/bash
-python3 /home/ec2-user/app/hello.py &
+python3 /home/ec2-user/demo-app/hello.py &
