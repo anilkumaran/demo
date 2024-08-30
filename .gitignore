@@ -162,4 +162,5 @@ cython_debug/
 #.idea/
 
 
-_IAC/.terraform/*
+devops/*/.terraform/*
+devops/3._IAC/.terraform/*
