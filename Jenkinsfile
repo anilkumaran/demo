@@ -6,10 +6,7 @@ pipeline {
             steps {
                 echo 'Hello World'
                 sh '''
-                echo $(pwd)
-                ls
-                whoami
-                python3 hello.py
+                python3 create_db_backup
                 '''
             }
         }
