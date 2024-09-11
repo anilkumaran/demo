@@ -8,6 +8,7 @@ pipeline {
                 sh '''
                 echo $(pwd)
                 ls
+                whoami
                 python hello.py
                 '''
             }
