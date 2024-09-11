@@ -6,7 +6,7 @@ pipeline {
             steps {
                 echo 'Hello World'
                 sh '''
-                ehco $(pwd)
+                echo $(pwd)
                 ls
                 python hello.py
                 '''
