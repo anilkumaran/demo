@@ -9,7 +9,7 @@ pipeline {
                 echo $(pwd)
                 ls
                 whoami
-                python hello.py
+                python3 hello.py
                 '''
             }
         }
