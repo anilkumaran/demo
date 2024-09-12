@@ -5,9 +5,6 @@ pipeline {
         stage('Hello') {
             steps {
                 echo 'Hello World'
-                sh '''
-                python3 create_db_backup
-                '''
             }
         }
         // stage('StopEC2') {
