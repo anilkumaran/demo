@@ -7,7 +7,20 @@ pipeline {
                 echo 'Hello World'
             }
         }
-        // stage('StopEC2') {
+        stage('ManageEC2') {
+            parallel {
+                stage('GetLaptopDetail') {
+                    steps {
+                        echo 'python3 get_laptop_details.py'
+                    }
+                }
+                stage('Stop EC2') {
+                    steps {
+                        echo 'python3 stop_ec2.py'
+                    }
+                }
+            }
+        }
         //     steps {
         //         withAWS(region: 'us-east-1'){
         //             withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'PROD_AWS_ACCESS_KEY_ID', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
@@ -44,6 +57,4 @@ pipeline {
             }
         }
     }
-    }
-
 }
