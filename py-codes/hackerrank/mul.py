@@ -10,30 +10,14 @@ def get_digit_sum(num):
 
 def is_multiple_of_3(num):
     return get_digit_sum(num) in (3, 6, 9)
-    gst
+    
 def is_multiple_of_5(num):
     return str(num)[-1] in ('0', '5')
 
 def fizzBuzz(n):
-    return fizzBuzzv2(n)
-    # Write your code here
-    for i in range(1, n+1):
-        if is_multiple_of_3(i) and is_multiple_of_5(i):
-            # print(f'I i: {i}')
-            print('FizzBuzz')
-        elif is_multiple_of_3(i) and not is_multiple_of_5(i):
-            # print(f'II i: {i}')
-            print('Fizz')
-        elif is_multiple_of_5(i) and not is_multiple_of_3(i):
-            # print(f'III i: {i}')
-            print('Buzz')
-        else:
-            # print(f'IV i: {i}')
-            print(i)
-
-def fizzBuzzv2(n):
     i = n
     # Write your code here
+    # for i in range(1, n+1):
     if is_multiple_of_3(i) and is_multiple_of_5(i):
         # print(f'I i: {i}')
         print('FizzBuzz')
