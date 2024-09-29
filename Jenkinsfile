@@ -80,10 +80,11 @@ pipeline {
                 )
 
                 AWS_ACCOUNT_ID="631906900060"
-                // aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com
-                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com
+                // aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+                // docker build --no-cache -f devops/Dockerfile -t ak .
 
-                docker build \
+                docker build --no-cache\
                     -f ${DOCKERFILE} \
                     --build-arg ACCOUNT_ID=${ACCOUNT_NO[$ENV]} \
                     --build-arg APP=${APP} \
@@ -98,7 +99,7 @@ pipeline {
                 [ $? -ne 0 ] && exit 1
                 
                 sudo docker push ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:${BRANCH,,}-${BUILD_NUMBER}
-                sudo docker push ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${WORKSPACE}:latest
+                sudo docker push ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:latest
                 """
                 // STACK_NAME = "employee-management-${env.ENV}"
 

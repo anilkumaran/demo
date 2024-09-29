@@ -28,6 +28,10 @@ Resources:
           FromPort: 80
           ToPort: 80
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 5000
+          ToPort: 5000
+          CidrIp: 0.0.0.0/0
   EC2Instance:
     Type: 'AWS::EC2::Instance'
     Properties: 
@@ -45,12 +49,16 @@ Resources:
           sudo apt-get install apache2 -y
           sudo systemctl enable apache2
           sudo systemctl start apache2
+          sudo a2enmod proxy
+          sudo a2enmod proxy_http
+          systemctl restart apache2
 
           # Install Docker
           for pkg in docker.io docker-doc docker-compose docker-compose-v2 podman-docker containerd runc; do sudo apt-get remove $pkg; done
           
           sudo apt-get update
-          sudo apt-get install ca-certificates curl apache2 -y
+          sudo apt-get install ca-certificates curl -y
+
           sudo install -m 0755 -d /etc/apt/keyrings
           sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
           sudo chmod a+r /etc/apt/keyrings/docker.asc
