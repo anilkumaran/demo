@@ -83,6 +83,7 @@ Resources:
             sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
             sudo docker run hello-world
             sudo usermod -aG docker ubuntu
+            sudo systemctl restart jenkins
 
             # install awscli
             sudo apt install unzip -y

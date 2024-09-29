@@ -56,62 +56,31 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo "Building ${env.ENV} environment"
-                CFN_TEMPLATE = 'devops/CF-' + APP + '.yaml'
-                sh """
-                sudo docker build -t $DOCKER_IMAGE .
-                aws ecr get-login-password --region ${REGION} |
-                sudo docker login \
-                    --username AWS \
-                    --password-stdin \
-                    "${ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com"
-                """
-            }
-        }
+                script{
 
-        stage('Deploy') {
-            steps {
-                echo "Deploying ${env.ENV} environment"
-                sh """
-                declare -A ACCOUNT_NO
-                ACCOUNT_NO=(
-                    ['uat']="631906900060"
-                    ['prod']="631906900060"
-                )
+                    echo "Deploying ${env.ENV} environment"
+                    def AWS_ACCOUNT_ID="631906900060"
+                    sh """#!/bin/bash
+                    whoami
+                    aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
+                    # docker build --no-cache -f devops/Dockerfile -t ak .
+                    echo "WORKSPACE: ${WORKSPACE}"
+                    docker build --no-cache -f devops/Dockerfile -t ak ${WORKSPACE}
+                    
+                    """
+                    // STACK_NAME = "employee-management-${env.ENV}"
 
-                AWS_ACCOUNT_ID="631906900060"
-                aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com
-                // aws ecr get-login-password --region ap-south-1 | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${REGION}.amazonaws.com
-                // docker build --no-cache -f devops/Dockerfile -t ak .
+                    // Run AWS CLI to create/update CloudFormation stack
+                    // sh """
+                    // aws cloudformation deploy \
+                    //   --template-file ${CFN_TEMPLATE} \
+                    //   --stack-name ${STACK_NAME} \
+                    //   --capabilities CAPABILITY_NAMED_IAM \
+                    //   --parameter-overrides EnvType=${env.ENV} \
+                    //   --region ${REGION}
+                    // """
+                }
 
-                docker build --no-cache\
-                    -f ${DOCKERFILE} \
-                    --build-arg ACCOUNT_ID=${ACCOUNT_NO[$ENV]} \
-                    --build-arg APP=${APP} \
-                    --build-arg APPNODASH=${APP_NO_DASH} \
-                    --build-arg ENV=${ENV} \
-                    --build-arg BRANCH_NAME=${BRANCH} \
-                    --build-arg PORT=${PORT} \
-                    --build-arg REGION=${REGION} \
-                    -t ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:${BRANCH,,}-${BUILD_NUMBER}  \
-                    -t ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:latest ${WORKSPACE}
-
-                [ $? -ne 0 ] && exit 1
-                
-                sudo docker push ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:${BRANCH,,}-${BUILD_NUMBER}
-                sudo docker push ${ACCOUNT_NO[$ENV]}.dkr.ecr.${REGION}.amazonaws.com/${APP_NO_DASH}:latest
-                """
-                // STACK_NAME = "employee-management-${env.ENV}"
-
-                // Run AWS CLI to create/update CloudFormation stack
-                // sh """
-                // aws cloudformation deploy \
-                //   --template-file ${CFN_TEMPLATE} \
-                //   --stack-name ${STACK_NAME} \
-                //   --capabilities CAPABILITY_NAMED_IAM \
-                //   --parameter-overrides EnvType=${env.ENV} \
-                //   --region ${REGION}
-                // """
             }
         }
     }
