@@ -51,7 +51,9 @@ Jenkins_Public_IP = 13.232.108.130
     i. Crete branches DEMO-CICD-PROD and DEMO-CICD-PROD and DEMO-CICD-UAT from main. 
     ii. Go to multibranch pieline -> Configure -> Behaviour: Filter by name (with wildcards) -> use DEMO-CICD-* to build only branches starting with DEMO-CICD- -> Save
         The multibranch pipeline now should have two pipelines named DEMO-CICD-PROD and DEMO-CICD-UAT which should have the 1st build in successful state
-    iii. Install AWS Credential plugin https://plugins.jenkins.io/aws-credentials/
+    iii. Install plugins
+        AWS Credential plugin https://plugins.jenkins.io/aws-credentials/
+        Pipeline: AWS Steps https://plugins.jenkins.io/pipeline-aws/
     iii. Create an IAM user nanmed jenkins in AWS manually (this is required only once) with required permissions (like create stack, delete stack, start ec2 etc)
         Cerate AccessKeyId and SecretAccesKey to use in Jenkins-Master
         Configure the above credentials in jenkins using credentials

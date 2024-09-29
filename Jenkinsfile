@@ -9,6 +9,12 @@ pipeline {
         BRANCH = BRANCH_NAME.replaceAll("USN-CICD-","").replaceAll("-","").toLowerCase()
         PORT = '5000'
     }
+    options {
+        timeout(time: 1, unit: 'HOURS')
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        disableConcurrentBuilds()
+        skipDefaultCheckout()
+    }
     stages {
         stage('Checkout') {
             steps {
@@ -16,9 +22,9 @@ pipeline {
                 // git 'https://github.com/anilkumaran/demo.git'
             }
         }
-        stage('Set AWS Credentials') {
+        stage('BuildCF') {
             steps {
-                echo "Building ${params.EnvType} environment"
+                echo "Building ${env.ENV} environment"
                 withAWS(region: env.REGION){
                     withCredentials([[
                         $class: 'AmazonWebServicesCredentialsBinding',
@@ -28,7 +34,7 @@ pipeline {
                     ]]) {
                         // AWS credentials are now set in the environment
                         echo "pwd: ${pwd}"
-                        echo "AWS credentials loaded."
+                        echo "WORKSPACE: ${WORKSPACE}"
                         // cfnUpdate(stack: env.APP + '-common', file:'devops/CF-' + env.APP + '-common.yaml', params:[
                         //     'Application='+ env.APP_NO_DASH,
                         //     'AccountName='+ env.ENV
@@ -40,7 +46,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo "Building ${params.EnvType} environment"
+                echo "Building ${env.ENV} environment"
                 // CFN_TEMPLATE = 'devops/CF-' + APP + '.yaml'
                 // sh 'pip install -r requirements.txt'
                 // sh 'pytest tests/'  // Run tests
@@ -57,8 +63,8 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                echo "Deploying ${params.EnvType} environment"
-                // STACK_NAME = "employee-management-${params.EnvType}"
+                echo "Deploying ${env.ENV} environment"
+                // STACK_NAME = "employee-management-${env.ENV}"
 
                 // Run AWS CLI to create/update CloudFormation stack
                 // sh """
@@ -66,7 +72,7 @@ pipeline {
                 //   --template-file ${CFN_TEMPLATE} \
                 //   --stack-name ${STACK_NAME} \
                 //   --capabilities CAPABILITY_NAMED_IAM \
-                //   --parameter-overrides EnvType=${params.EnvType} \
+                //   --parameter-overrides EnvType=${env.ENV} \
                 //   --region ${REGION}
                 // """
             }
