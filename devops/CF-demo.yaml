@@ -1,0 +1,77 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Real-time Employee Management Infra
+
+Resources:
+  # EC2 Instance for Flask + Apache
+  FlaskEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      InstanceType: 't2.micro'
+      ImageId: 'ami-0c55b159cbfafe1f0' # Amazon Linux 2 AMI ID
+      KeyName: 'your-key-pair'
+      SecurityGroups: 
+        - Ref: FlaskSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y httpd
+          amazon-linux-extras install python3
+          pip3 install flask
+          systemctl enable httpd
+          systemctl start httpd
+          # Clone your Flask app and run it
+          cd /var/www/html
+          git clone https://github.com/your-repo/employee-management.git
+          cd employee-management
+          python3 app.py &
+
+  FlaskSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable HTTP access'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  # RDS Instance for Employee DB
+  EmployeeDBInstance:
+    Type: 'AWS::RDS::DBInstance'
+    Properties: 
+      DBInstanceClass: 'db.t2.micro'
+      Engine: 'MySQL'
+      MasterUsername: 'admin'
+      MasterUserPassword: 'password'
+      AllocatedStorage: 20
+
+  # Jenkins Server
+  JenkinsEC2Instance:
+    Type: 'AWS::EC2::Instance'
+    Properties: 
+      InstanceType: 't2.micro'
+      ImageId: 'ami-0c55b159cbfafe1f0' # Amazon Linux 2 AMI
+      KeyName: 'your-key-pair'
+      SecurityGroups: 
+        - Ref: JenkinsSecurityGroup
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          yum update -y
+          yum install -y java-1.8.0-openjdk-devel
+          wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+          rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+          yum install jenkins -y
+          systemctl enable jenkins
+          systemctl start jenkins
+
+  JenkinsSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable Jenkins Access'
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0

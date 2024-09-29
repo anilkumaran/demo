@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation Template to create a Jenkins Master on Ubuntu
+Parameters:
+  KeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: The EC2 KeyPair to allow SSH access to the instance
+    Default: ak-jenkins-master
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Description: Select VPC where the EC2 instance will be deployed
+    Default: vpc-0d98ec84a6204ed79
+  SubnetId:
+    Type: AWS::EC2::Subnet::Id
+    Description: Select Subnet in the VPC where EC2 instance will be deployed
+    Default: subnet-051f6c7811fa8925b # 172.31.32.0/20
+Resources:
+  JenkinsSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties: 
+      GroupDescription: Enable SSH and HTTP access to the Jenkins instance
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 8080
+          ToPort: 8080
+          CidrIp: 0.0.0.0/0
+  JenkinsInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.small
+      KeyName: !Ref KeyName
+      SubnetId: !Ref SubnetId
+      SecurityGroupIds:
+        - !Ref JenkinsSecurityGroup
+      ImageId: ami-0522ab6e1ddcc7055  #ubuntu 22.04 LTS
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: 8  # 8GB storage
+      UserData:
+        Fn::Base64: | 
+            #!/bin/bash
+            sudo apt update -y
+            # sudo apt install openjdk-11-jdk -y
+            # sudo apt install wget -y
+            sudo apt install fontconfig openjdk-17-jre -y
+            sudo wget -O /usr/share/keyrings/jenkins-keyring.asc \
+              https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+            echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" \
+              https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+              /etc/apt/sources.list.d/jenkins.list > /dev/null
+            sudo apt-get update -y
+            sudo apt-get install jenkins -y
+
+            sudo systemctl start jenkins
+            sudo systemctl enable jenkins
+            # Open Jenkins port 8080
+            # sudo ufw allow 8080
+            # Get initial Jenkins admin password for access
+            sudo cat /var/lib/jenkins/secrets/initialAdminPassword > /tmp/jenkins-admin-password.txt
+            sudo apt update -y
+      Tags:
+        - Key: Name
+          Value: jenkins-master
+
+Outputs:
+  JenkinsURL:
+    Description: The URL of the Jenkins Master instance
+    Value: !Sub "http://${JenkinsInstance.PublicIp}:8080"
+  AdminPassword:
+    Description: Initial Jenkins admin password stored on the instance
+    Value: "Connect via SSH and access password file at /tmp/jenkins-admin-password.txt"

@@ -1,0 +1,62 @@
+pipeline {
+    agent any
+
+    environment {
+        AWS_REGION = 'us-east-1'  // Specify your AWS region
+        CFN_TEMPLATE = 'employee-management-cfn.yaml'  // Your CloudFormation template file
+        STACK_NAME = "employee-management-${params.EnvType}"
+        EC2_KEY_PAIR = 'your-key-pair'  // Replace with your EC2 key pair name
+    }
+
+    parameters {
+        choice(name: 'EnvType', choices: ['prod', 'test'], description: 'Environment to deploy (prod or test)')
+    }
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    echo "Building the ${params.EnvType} environment"
+                    // Clone the repository
+                    checkout scm
+                    
+                    // Install Python dependencies
+                    sh 'pip install -r requirements.txt'
+                    
+                    // Run tests (if any)
+                    sh 'pytest tests/'  // You can add tests inside the 'tests/' directory
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    echo "Deploying to the ${params.EnvType} environment"
+                    
+                    // Run AWS CLI command to deploy/update the CloudFormation stack
+                    sh """
+                    aws cloudformation deploy \
+                      --template-file ${CFN_TEMPLATE} \
+                      --stack-name ${STACK_NAME} \
+                      --capabilities CAPABILITY_NAMED_IAM \
+                      --parameter-overrides \
+                        EnvType=${params.EnvType} \
+                        InstanceType=t2.micro \
+                        KeyPair=${EC2_KEY_PAIR} \
+                      --region ${AWS_REGION}
+                    """
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Build and Deployment succeeded!'
+        }
+        failure {
+            echo 'Build or Deployment failed!'
+        }
+    }
+}
