@@ -36,9 +36,22 @@ Jenkins_Public_IP = 13.232.108.130
         b. click on it and verify the connectivity
 
 3. Crate a Multibranch pipeline with name Pipeline-${APP_NAME}
+    Before we create a multibranch pipeline, Use a plain Jenkins file with only one stage and an echo command as first build should be successful on main branch
     ex: Pipeline-demo
     Branch Sources: Git
     Project Repository: https://github.com/anilkumaran/demo.git
     Credentials: jenkins-master-ssh-key (credential we create in step 2 -> ii)
-    Behaviour: 
-    Use a plain Jenkins file with only one stage and an echo command as first build should be successful
+    Behaviour: Filter by name (with wildcards) -> main*
+    Save
+
+    A multibranch pipeline with "main" as pipeline job should be creatd
+
+
+4. Setup CICD for multi environment
+    i. Crete branches DEMO-CICD-PROD and DEMO-CICD-PROD and DEMO-CICD-UAT from main. 
+    ii. Go to multibranch pieline -> Configure -> Behaviour: Filter by name (with wildcards) -> use DEMO-CICD-* to build only branches starting with DEMO-CICD- -> Save
+        The multibranch pipeline now should have two pipelines named DEMO-CICD-PROD and DEMO-CICD-UAT which should have the 1st build in successful state
+    iii. Install AWS Credential plugin https://plugins.jenkins.io/aws-credentials/
+    iii. Create an IAM user nanmed jenkins in AWS manually (this is required only once) with required permissions (like create stack, delete stack, start ec2 etc)
+        Cerate AccessKeyId and SecretAccesKey to use in Jenkins-Master
+        Configure the above credentials in jenkins using credentials
