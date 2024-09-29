@@ -35,11 +35,11 @@ pipeline {
                         // AWS credentials are now set in the environment
                         echo "pwd: ${pwd}"
                         echo "WORKSPACE: ${WORKSPACE}"
-                        // cfnUpdate(stack: env.APP + '-common', file:'devops/CF-' + env.APP + '-common.yaml', params:[
-                        //     'Application='+ env.APP_NO_DASH,
-                        //     'AccountName='+ env.ENV
-                        //     ]
-                        // )
+                        cfnUpdate(stack: env.APP + '-common', file:'devops/CF-' + env.APP + '-common.yaml', params:[
+                            'Application='+ env.APP_NO_DASH,
+                            'AccountName='+ env.ENV
+                            ]
+                        )
                     }
                 }
             }

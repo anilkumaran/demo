@@ -10,11 +10,7 @@ Parameters:
       - prod
       - uat
 Resources:
-  ECRUat:
-    Type: AWS::ECR::Repository
-    Properties:
-      RepositoryName: !Sub '${AppName}-${Env}'
-  ECRProd:
+  ECR:
     Type: AWS::ECR::Repository
     Properties:
       RepositoryName: !Sub '${AppName}-${Env}'
@@ -24,6 +20,10 @@ Resources:
       GroupDescription: 'Enable HTTP access'
       GroupName: !Sub '${AppName}-${Env}'
       SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: 80
           ToPort: 80
