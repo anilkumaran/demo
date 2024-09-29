@@ -1,0 +1,44 @@
+john jenkins token: 11346f6e553fa0bcab49fe09b31c2771b0
+jenkins url : http://15.206.67.243:8080/github-webhook/
+
+Jenkins_Public_IP = 13.232.108.130
+1. Create Jenkins master manually from AWS CFN console
+    Stack Name: jenkins-master
+    temlate-localtion: devops/jenkins-master.yaml
+    AMI: ami-0522ab6e1ddcc7055 (Ubuntu 22.04 LTS)
+    RAM: min 2GB (t2.small)
+    HardDisk: min 8GB
+    keypair: ak-jenkins-master
+    Install Jenkins: https://www.jenkins.io/doc/book/installing/linux/
+
+2. Connect git to Jenkins
+    i. Create ssh key for user "jenkins" on jenkins master
+        ssh to jenkins master
+        sudo su jenkins
+        cd
+        ssh-keygen -t rsa (click enter enter )
+        cat ~/.ssh/id_rsa
+        copy the text
+    ii. Create a jenkins credential
+        go to Manage Jenkins -> credentials -> create new -> SSH username with private key
+        ID: jenkins-master-ssh-key
+        usernane: jenkins
+        privatekey: enter directly
+    iii. Add jenkin's ssh key to git
+        a. Login to jenkins master -> sudo su -> cd -> cat ~/.ssh/id_rsa.pub -> copy the text
+        b. Go to git -> yourprofile (or jenkins user profile) -> Settings -> SSH and GPG keys -> new ssh key
+        c. check connectivity by logging into jenkins master -> sudo su -> cd -> ssh -T git@github.com
+    iv. Test the connectivity from jenkins to git and vicevers using a webhook
+        a. go to your project https://github.com/anilkumaran/demo -> settings -> Webhooks -> Add webhook
+        Payoad URL: http://Jenkins_Public_IP:8080/github-webhook/
+            ex: http://13.232.108.130:8080/github-webhook/
+        Content Type: application/json
+        b. click on it and verify the connectivity
+
+3. Crate a Multibranch pipeline with name Pipeline-${APP_NAME}
+    ex: Pipeline-demo
+    Branch Sources: Git
+    Project Repository: https://github.com/anilkumaran/demo.git
+    Credentials: jenkins-master-ssh-key (credential we create in step 2 -> ii)
+    Behaviour: 
+    Use a plain Jenkins file with only one stage and an echo command as first build should be successful
