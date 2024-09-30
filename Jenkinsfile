@@ -115,17 +115,12 @@ pipeline {
                             credentialsId: 'demo-aws-account' // ID of the AWS credentials in Jenkins
                         ]]) {
                             def aws_cred_file="/home/ubuntu/.aws/credentials"
-                            def instanceId_pubIp_map = [
-                                'uat': '13.201.35.25',
-                                'prod': '1.2.3.4'
-                                ]
                                 
-                            echo "Deploying to EC2 instance: ${instanceId_pubIp_map[ENVIRONMENT]}"
-                            // def instance_ip = ${instanceId_pubIp_map[ENVIRONMENT]}
-                            // echo "Deploying the Docker image to EC2 instance ${instanceId} and ip: ${instanceId_pubIp_map.}"
                             sh """#!/bin/bash
-                            echo ${instanceId_pubIp_map[ENVIRONMENT]}
-                            ssh -i ${EC2_KEY_PAIR} -tt ubuntu@${instanceId_pubIp_map[ENVIRONMENT]} << 'ENDSSH'
+                            instance_ip=\$(aws ec2 describe-instances --filters "Name=tag:Name,Values=${APP_NO_DASH}-${ENVIRONMENT}" --query "Reservations[*].Instances[*].PublicIpAddress" --output text)
+                            echo \$instance_ip
+                            ssh -o StrictHostKeyChecking=no -i ${EC2_KEY_PAIR} -tt ubuntu@\$instance_ip << 'ENDSSH'
+                                echo "Deploying to EC2 instance: \$instance_ip"
                                 mkdir -p /home/ubuntu/.aws
                                 touch ${aws_cred_file}
                                 echo [default] > ${aws_cred_file}
