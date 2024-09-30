@@ -7,12 +7,13 @@ environment = os.getenv('ENVIRONMENT')
 # In-memory employee data (replace with a DB in production)
 employees = [
     {'id': 1, 'name': 'John Doe', 'role': 'Developer'},
-    {'id': 2, 'name': 'Jane Smith', 'role': 'Manager'}
+    {'id': 2, 'name': 'Jane Smith', 'role': 'Manager'},
+    {'id': 3, 'name': 'Alex', 'role': 'Junior Dev'}
 ]
 
 @app.route('/')
 def index():
-    return f"Welcome to Employee Management System - {environment}"
+    return f"Welcome to Employee Management System from {environment}"
 
 # Get all employees
 @app.route('/employees', methods=['GET'])
