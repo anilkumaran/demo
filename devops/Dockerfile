@@ -16,16 +16,19 @@
 # EXPOSE 5000
 
 # # Define environment variable
-# ENV FLASK_APP=app.py
-# ENV FLASK_RUN_HOST=0.0.0.0
+# ENVIRONMENT FLASK_APP=app.py
+# ENVIRONMENT FLASK_RUN_HOST=0.0.0.0
 
 # # Run app.py when the container launches
 # CMD ["flask", "run"]
 
 
 FROM python:3.9-slim-buster
+ARG ENVIRONMENT
+ENV ENVIRONMENT=${ENVIRONMENT}
 WORKDIR /app
 COPY . /app
 RUN pip install --no-cache-dir -r employee_mgmt/requirements.txt
+ENV MY_ENV_VAR='YourValueHere'
 EXPOSE 5000
 CMD ["python", "employee_mgmt/app.py"]

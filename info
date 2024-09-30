@@ -46,6 +46,9 @@ Jenkins_Public_IP = 13.232.108.130
 
     A multibranch pipeline with "main" as pipeline job should be creatd
 
+    Copy the pem file of ec2 instances to jenkins-master's jenkins user directory (/var/lib/jenkins/devops/)
+    chmod 600 ak-instance-kp.pem
+
 
 4. Setup CICD for multi environment
     i. Crete branches DEMO-CICD-PROD and DEMO-CICD-PROD and DEMO-CICD-UAT from main. 

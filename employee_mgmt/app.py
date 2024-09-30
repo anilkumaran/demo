@@ -1,7 +1,9 @@
+import os
 from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+environment = os.getenv('ENVIRONMENT')
 # In-memory employee data (replace with a DB in production)
 employees = [
     {'id': 1, 'name': 'John Doe', 'role': 'Developer'},
@@ -10,7 +12,7 @@ employees = [
 
 @app.route('/')
 def index():
-    return "Welcome to Employee Management System"
+    return f"Welcome to Employee Management System - {environment}"
 
 # # Get all employees
 # @app.route('/employees', methods=['GET'])

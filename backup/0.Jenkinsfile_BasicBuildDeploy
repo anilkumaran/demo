@@ -4,7 +4,7 @@ pipeline {
     environment {
         APP = "demo"
         AWS_REGION = 'ap-south-1'
-        ENV = BRANCH_NAME.replaceAll("DEMO-CICD-","").replaceAll("-","").replaceAll("\\d","").toLowerCase()
+        ENVIRONMENT = BRANCH_NAME.replaceAll("DEMO-CICD-","").replaceAll("-","").replaceAll("\\d","").toLowerCase()
     }
     stages {
         stage('Checkout') {
