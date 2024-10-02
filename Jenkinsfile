@@ -6,4 +6,5 @@ pipeline {
                 echo "Getting code"
             }
         }
+    }
 }
