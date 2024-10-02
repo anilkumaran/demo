@@ -13,7 +13,7 @@ employees = [
 
 @app.route('/')
 def index():
-    return f"Welcome to Employee Management System from {environment}"
+    return f"DEMO: Welcome to Employee Management System from {environment}"
 
 # Get all employees
 @app.route('/employees', methods=['GET'])
