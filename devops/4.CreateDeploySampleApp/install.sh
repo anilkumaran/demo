@@ -10,3 +10,5 @@ cd demo-ecom-app
 python3 -m venv demo-venv
 source demo-venv/bin/activate
 pip3 install Flask
+
+flask --app hello run
