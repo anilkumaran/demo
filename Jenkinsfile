@@ -13,7 +13,13 @@ pipeline {
         stage('Checkout') {
             steps {
                 echo "Getting code"
-                // git 'https://github.com/anilkumaran/demo.git'
+                script {
+                    sh'''
+                    git clone git@github.com:surendr/testQ.git
+                    
+                    '''
+                }
+                
             }
         }
         stage('Set AWS Credentials') {
@@ -69,6 +75,15 @@ pipeline {
                 //   --parameter-overrides EnvType=${params.EnvType} \
                 //   --region ${REGION}
                 // """
+            }
+        }
+        stage("Test") {
+            steps {
+                script {
+                    sh'''
+                    ./myQAScript.sh
+                    '''
+                }
             }
         }
     }
