@@ -28,7 +28,14 @@ Conditions:
   CreateProdResources: !Equals [!Ref EnvType, prod]
   CreateDevResources: !Equals [!Ref EnvType, "dev"]
 Resources:
-  SG:
-    Type: "AWS::EC2::SecurityGroup"
+  MyEcomS3Bucket:
+    Type: "AWS::S3::Bucket"
     Properties:
-      EC2Instance1PubIp: !ImportValue EC2Instance1PubIp
+      VersioningConfiguration:
+        Status: Suspended
+      Tags:
+        - Key: Environment
+          Value: !Ref EnvType
+        - Key: Project
+          Value: EcomApp
+    
